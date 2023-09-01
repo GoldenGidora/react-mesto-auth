@@ -1,22 +1,34 @@
 import { useState } from 'react';
 import FormWithAuthorization from "./FormWithAuthorization";
 
-const Register = () => {
+import * as auth from '../utils/Auth';
+import {useNavigate} from "react-router-dom";
+
+const Register = (props) => {
+
+    const navigate = useNavigate();
 
     const [userData, setUserData] = useState({
         email: '',
         password: '',
     });
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
+    const handleChange = (e) => {
+        const { name, value } = e.target;
         setUserData({
+            ...userData,
             [name]: value,
         });
     };
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const { email, password } = userData;
+        auth.register(email, password).then((res) => {
+            if (res.ok) {
+                props.history.push('/sign-in');
+            }
+        });
     };
 
     return (

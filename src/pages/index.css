@@ -44,3 +44,6 @@
 @import url('../blocks/auth/__title/auth__title.css');
 @import url('../blocks/auth/__form/auth__form.css');
 @import url('../blocks/auth/__login/auth__login.css');
+@import url('../blocks/popup/__signup-icon/popup__signup-icon.css');
+@import url('../blocks/popup/__signup-title/popup__signup-title.css');
+@import url('../blocks/popup/__success/popup__success.css');

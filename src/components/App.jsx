@@ -10,22 +10,30 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import ConfirmPopup from "./ConfirmPopup";
-import {Routes, Navigate, Route} from "react-router-dom";
+import {Routes, useNavigate, Route} from "react-router-dom";
 import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
+import * as auth from "../utils/Auth";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
     const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
     const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
     const [removeCard, setRemoveCard] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
+    const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
+    const [authorizationEmail, setAuthorizationEmail] = useState('');
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         Promise.all([api.getUserInfo(), api.getCards()])
@@ -131,8 +139,7 @@ function App() {
                         path='/'
                         element={
                             <ProtectedRoute
-                                path="/"
-                                component={Main}
+                                element={Main}
                                 loggedIn={loggedIn}
                                 onEditProfile={handleEditProfileClick}
                                 onAddPlace={handleAddPlaceClick}
@@ -184,6 +191,11 @@ function App() {
                     onClose={closeAllPopups}
                     onUpdateAvatar={handleUpdateAvatar}
                     onLoading={isLoading}
+                />
+                <InfoTooltip
+                    isOpen={isInfoTooltipOpen}
+                    onClose={closeAllPopups}
+                    isSuccess={isRegistrationSuccessful}
                 />
             </div>
         </currentUserContext.Provider>
