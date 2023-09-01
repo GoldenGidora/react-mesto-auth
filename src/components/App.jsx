@@ -16,6 +16,7 @@ import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import * as auth from "../utils/Auth";
 import InfoTooltip from "./InfoTooltip";
+import PageNotFound from "./404";
 
 function App() {
     const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
@@ -102,7 +103,7 @@ function App() {
                 setUserEmail(email);
                 localStorage.setItem('jwt', res.token)
                 setLoggedIn(true);
-                navigate('/');
+                navigate('/', {replace: true});
             })
             .catch(e => {
                 if (e.statusCode === 400) {
@@ -126,7 +127,7 @@ function App() {
                 if (data) {
                     setLoggedIn(true);
                     setUserEmail(data.data.email);
-                    navigate('/');
+                    navigate('/', {replace: true});
                 } else {
                     setLoggedIn(false)
                 }
@@ -137,7 +138,7 @@ function App() {
     const handleSignOut = () => {
         setLoggedIn(false);
         localStorage.removeItem('jwt');
-        navigate('/sign-in');
+        navigate('/sign-in', {replace: true});
     };
 
     const handleCardLike = card => {
@@ -232,6 +233,12 @@ function App() {
                         path="/sign-up"
                         element={
                             <Register onRegister={handleRegistration}/>
+                        }
+                    />
+                    <Route
+                        path={'*'}
+                        element={
+                            <PageNotFound/>
                         }
                     />
                 </Routes>
