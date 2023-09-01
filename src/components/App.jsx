@@ -24,24 +24,30 @@ function App() {
     const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false);
     const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
 
     const [selectedCard, setSelectedCard] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [cards, setCards] = useState([]);
     const [removeCard, setRemoveCard] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
-    const [isRegistrationSuccessful, setIsRegistrationSuccessful] = useState(false);
-    const [authorizationEmail, setAuthorizationEmail] = useState('');
+    const [isTooltipInfoSuccess, setIsTooltipInfoSuccess] = useState(false);
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        Promise.all([api.getUserInfo(), api.getCards()])
-            .then(([user, cards]) => {
-                setCurrentUser(user);
-                setCards(cards);
-            })
-            .catch(e => console.log(e))
+        if (loggedIn) {
+            Promise.all([api.getUserInfo(), api.getCards()])
+                .then(([user, cards]) => {
+                    setCurrentUser(user);
+                    setCards(cards);
+                })
+                .catch(e => console.log(e))
+        }
+    }, [loggedIn]);
+
+    useEffect(() => {
+        checkToken();
     }, []);
 
     const closeAllPopups = () => {
@@ -50,6 +56,7 @@ function App() {
         setEditProfilePopupOpen(false);
         setConfirmPopupOpen(false);
         setSelectedCard({});
+        setIsInfoTooltipOpen(false);
     }
 
     const handleAddPlaceClick = () => {
@@ -72,6 +79,66 @@ function App() {
         setConfirmPopupOpen(true);
         setRemoveCard(card);
     }
+
+    const handleRegistration = (formData) => {
+        const {email, password} = formData;
+        return auth.register(email, password)
+            .then(() => {
+                setIsTooltipInfoSuccess(true)
+                setIsInfoTooltipOpen(true);
+                navigate('/sign-in')
+            })
+            .catch(e => {
+                console.log(e);
+                setIsTooltipInfoSuccess(false);
+                setIsInfoTooltipOpen(true);
+            })
+    }
+
+    const handleAuthoriztaionSuccess = (formData) => {
+        const {email, password} = formData;
+        return auth.authorization(email, password)
+            .then((res) => {
+                setUserEmail(email);
+                localStorage.setItem('jwt', res.token)
+                setLoggedIn(true);
+                checkToken();
+            })
+            .catch(e => {
+                if (e.statusCode === 400) {
+                    console.log('Не передано одно из полей');
+                } else if (e.statusCode === 401) {
+                    console.log('Пользователь с email не найден');
+                }
+                setIsInfoTooltipOpen(true);
+                setIsTooltipInfoSuccess(false);
+            })
+    }
+
+    const checkToken = () => {
+        const jwt = localStorage.getItem('jwt');
+        if (!jwt) {
+            setLoggedIn(false);
+            return;
+        }
+        auth.getContent(jwt)
+            .then(data => {
+                if (data) {
+                    setLoggedIn(true);
+                    setUserEmail(data.data.email);
+                    navigate('/');
+                } else {
+                    setLoggedIn(false)
+                }
+            })
+            .catch(e => console.log(e));
+    }
+
+    const handleSignOut = () => {
+        setLoggedIn(false);
+        localStorage.removeItem('jwt');
+        navigate('/sign-in');
+    };
 
     const handleCardLike = card => {
         const isLiked = card.likes.some(
@@ -133,7 +200,11 @@ function App() {
     return (
         <currentUserContext.Provider value={currentUser}>
             <div className="page">
-                <Header/>
+                <Header
+                    loggedIn={loggedIn}
+                    userEmail={userEmail}
+                    onSignOut={handleSignOut}
+                />
                 <Routes>
                     <Route
                         path='/'
@@ -151,15 +222,17 @@ function App() {
                             />
                         }
                     />
-                    <Route path="/sign-in"
-                           element={
-                               <Login/>
-                           }
+                    <Route
+                        path="/sign-in"
+                        element={
+                            <Login onLogin={handleAuthoriztaionSuccess}/>
+                        }
                     />
-                    <Route path="/sign-up"
-                           element={
-                               <Register/>
-                           }
+                    <Route
+                        path="/sign-up"
+                        element={
+                            <Register onRegister={handleRegistration}/>
+                        }
                     />
                 </Routes>
                 <Footer/>
@@ -195,7 +268,7 @@ function App() {
                 <InfoTooltip
                     isOpen={isInfoTooltipOpen}
                     onClose={closeAllPopups}
-                    isSuccess={isRegistrationSuccessful}
+                    isSuccess={isTooltipInfoSuccess}
                 />
             </div>
         </currentUserContext.Provider>
