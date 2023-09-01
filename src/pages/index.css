@@ -40,3 +40,7 @@
 @import url('../blocks/popup/__input/_type/popup__input_type_error.css');
 @import url('../blocks/cards/__likes/cards__likes.css');
 @import url('../blocks/cards/__like/cards__like_number.css');
+@import url('../blocks/auth/auth.css');
+@import url('../blocks/auth/__title/auth__title.css');
+@import url('../blocks/auth/__form/auth__form.css');
+@import url('../blocks/auth/__login/auth__login.css');
