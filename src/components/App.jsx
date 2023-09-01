@@ -102,7 +102,7 @@ function App() {
                 setUserEmail(email);
                 localStorage.setItem('jwt', res.token)
                 setLoggedIn(true);
-                checkToken();
+                navigate('/');
             })
             .catch(e => {
                 if (e.statusCode === 400) {
@@ -240,16 +240,16 @@ function App() {
                     isOpen={isEditProfilePopupOpen}
                     onClose={closeAllPopups}
                     onUpdateUser={handleUpdateUser}
-                    onLoading={isLoading}
+                    isLoading={isLoading}
                 />
                 <AddPlacePopup
                     isOpen={isAddPlacePopupOpen}
                     onClose={closeAllPopups}
                     onAddPlace={handleAddPlace}
-                    onLoading={isLoading}
+                    isLoading={isLoading}
                 />
                 <ConfirmPopup
-                    onLoading={isLoading}
+                    isLoading={isLoading}
                     isOpen={isConfirmPopupOpen}
                     onClose={closeAllPopups}
                     onSubmit={handleCardDelete}

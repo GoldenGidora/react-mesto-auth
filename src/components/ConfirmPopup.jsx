@@ -1,7 +1,7 @@
 import React from 'react';
 import PopupWithForm from "./PopupWithForm";
 
-const ConfirmPopup = ({isOpen, onClose, onLoading, card, onSubmit}) => {
+const ConfirmPopup = ({isOpen, onClose, isLoading, card, onSubmit}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -15,7 +15,7 @@ const ConfirmPopup = ({isOpen, onClose, onLoading, card, onSubmit}) => {
             onSubmit={handleSubmit}
             name='confirm'
             title='Вы уверены?'
-            submitText={onLoading ? 'Сохранение...' : 'Да'}
+            submitText={isLoading ? 'Сохранение...' : 'Да'}
         />
     );
 };

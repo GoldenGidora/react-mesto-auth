@@ -1,4 +1,5 @@
 import logo from "../images/logo.svg";
+import {Link, Route, Routes} from "react-router-dom";
 function Header({loggedIn, userEmail, onSignOut}) {
 
     const signOut = (e) => {
@@ -16,6 +17,18 @@ function Header({loggedIn, userEmail, onSignOut}) {
                     </button>
                 </nav>
             )}
+            <Routes>
+                <Route exact path=':sign-in'
+                       element={
+                           <Link to='/sign-up' className='header__link'>Регистрация</Link>
+                       }
+                />
+                <Route exact path=':sign-up'
+                       element={
+                           <Link to='/sign-in' className='header__link'>Войти</Link>
+                       }
+                />
+            </Routes>
         </header>
     )
 }
